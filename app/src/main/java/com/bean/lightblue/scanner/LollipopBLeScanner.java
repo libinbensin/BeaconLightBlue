@@ -68,6 +68,7 @@ public class LollipopBLeScanner extends BLeScanner {
             Log.d(TAG, "Bluetooth not enabled");
             return;
         }
+        stopScanner();
         scanLeDevice();
     }
 

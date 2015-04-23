@@ -43,6 +43,7 @@ public class PreLollipopBLeScanner extends BLeScanner {
     @Override
     public void startScanner() {
         mBluetoothAdapter = mBluetoothManager.getAdapter();
+        stopScanner();
         if(!mBluetoothAdapter.isEnabled()){
             Log.d(TAG, "Bluetooth not enabled");
             return;

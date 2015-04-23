@@ -33,17 +33,14 @@ public class BeaconManager {
             String uuid = newBeacon.getUuid();
             if(mBeacons.containsKey(uuid)) {
                 mBeacons.remove(mBeacons.get(uuid));
-            }else {
-                showNotification(newBeacon);
             }
             mBeacons.put(uuid , newBeacon);
         }
     }
 
-    private void showNotification(Beacon newBeacon) {
-
+    public boolean isThisNewBeacon(Beacon newBeacon) {
+        return mBeacons == null || !mBeacons.containsKey(newBeacon.getUuid());
     }
-
 
     public List<Beacon> getBeacons(){
 
