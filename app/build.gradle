@@ -43,5 +43,4 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     apt "org.androidannotations:androidannotations:$AAVersion"
     compile "org.androidannotations:androidannotations-api:$AAVersion"
-    compile 'org.altbeacon:android-beacon-library:2+'
 }
