@@ -1,6 +1,5 @@
 package com.bean.lightblue.service;
 
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -8,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
 
 import com.bean.lightblue.R;
 import com.bean.lightblue.activities.HomeActivity_;
@@ -85,11 +85,14 @@ public class BeaconService extends Service implements BLeScanner.BleDeviceListen
         Intent resultIntent = new Intent(this, HomeActivity_.class);
         PendingIntent resultPendingIntent = PendingIntent.getActivity(this.getApplicationContext() , 0,
                 resultIntent ,PendingIntent.FLAG_UPDATE_CURRENT );
-        Notification.Builder mBuilder = new Notification.Builder(this)
+        NotificationCompat.Action action = new NotificationCompat.Action(R.mipmap.ic_launcher , "Check-In" , resultPendingIntent);
+
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
                         .setSmallIcon(R.mipmap.ic_launcher)
                         .setContentTitle(getString(R.string.app_name))
-                        .setContentText("Found new beacon (" + beacon.getDeviceName() +  "). Do you like to check-in now ?")
-                        .setContentIntent(resultPendingIntent);
+                        .setContentText("Found new beacon (" + beacon.getDeviceName() + "). Do you like to check-in now ?")
+                        .setContentIntent(resultPendingIntent)
+                        .addAction(action);
 
         mNotificationManager.notify(NOTIFICATION_ID , mBuilder.build());
     }

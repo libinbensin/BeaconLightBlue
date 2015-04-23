@@ -9,8 +9,6 @@ import org.androidannotations.annotations.AfterInject;
 import org.androidannotations.annotations.EBean;
 import org.androidannotations.annotations.RootContext;
 
-import java.util.UUID;
-
 /**
  *
  * @author Libin
@@ -61,7 +59,7 @@ public class PreLollipopBLeScanner extends BLeScanner {
 
     private void scanLeDevice() {
         // Stops scanning after a pre-defined scan period.
-        mHandler.postDelayed(new Runnable() {
+        /*mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 mScanning = false;
@@ -70,9 +68,10 @@ public class PreLollipopBLeScanner extends BLeScanner {
         }, SCAN_PERIOD);
 
         mScanning = true;
-        UUID[] uuids = {UUID.fromString(BEAN_LIGHT_UUID)};
+        UUID[] uuids = {UUID.fromString(BEAN_LIGHT_UUID)};*/
 
         mBluetoothAdapter.startLeScan(mLeScanCallback);
+        mScanning = true;
     }
 
 }
