@@ -1,25 +1,20 @@
 package com.bean.lightblue.service;
 
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.IBinder;
-import android.support.v4.app.NotificationCompat;
 
-import com.bean.lightblue.R;
-import com.bean.lightblue.activities.HomeActivity_;
 import com.bean.lightblue.manager.BeaconManager;
 import com.bean.lightblue.model.Beacon;
 import com.bean.lightblue.scanner.BLeScanner;
 import com.bean.lightblue.scanner.LollipopBLeScanner_;
 import com.bean.lightblue.scanner.PreLollipopBLeScanner_;
+import com.bean.lightblue.util.BeaconUtil;
 
 import org.androidannotations.annotations.Bean;
 import org.androidannotations.annotations.EService;
-import org.androidannotations.annotations.SystemService;
 
 /**
  *
@@ -28,12 +23,7 @@ import org.androidannotations.annotations.SystemService;
 @EService
 public class BeaconService extends Service implements BLeScanner.BleDeviceListener{
 
-    private static final int NOTIFICATION_ID = 0x2792; // some random
-
     private BLeScanner mBLeScanner;
-
-    @SystemService
-    NotificationManager mNotificationManager;
 
     @Bean
     BeaconManager mBeaconManager;
@@ -57,13 +47,40 @@ public class BeaconService extends Service implements BLeScanner.BleDeviceListen
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
+        findBeacons();
+        /*if(intent == null || TextUtils.isEmpty(intent.getAction())){
+            stopSelf();
+            return START_NOT_STICKY;
+        }
+        if(intent != null) {
+            switch (intent.getAction()) {
+                case BeaconUtil.ACTION_START_SCANNING:
+                    findBeacons();
+                    break;
+                case BluetoothDevice.ACTION_ACL_CONNECTED:
+                    BluetoothDevice device = intent.getExtras().getParcelable(BluetoothDevice.EXTRA_DEVICE);
+                    if (device != null) {
+                        findBeacons();
+                    } else {
+                        stopSelf();
+                    }
+                    break;
+                case BluetoothDevice.ACTION_ACL_DISCONNECTED:
+                    stopSelf();
+                    break;
+            }
+        }*/
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+
+    private void findBeacons(){
         if (getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
             setup();
             mBLeScanner.startScanner();
         }
-        return super.onStartCommand(intent, flags, startId);
     }
-
 
     @Override
     public void onDestroy() {
@@ -77,23 +94,13 @@ public class BeaconService extends Service implements BLeScanner.BleDeviceListen
     public void onBLeDeviceFound(Beacon beacon) {
         if(mBeaconManager.isThisNewBeacon(beacon)){
             mBeaconManager.addBeacon(beacon);
-            showNotification(beacon);
+            broadCastBeacon(beacon);
         }
     }
 
-    private void showNotification(Beacon beacon) {
-        Intent resultIntent = new Intent(this, HomeActivity_.class);
-        PendingIntent resultPendingIntent = PendingIntent.getActivity(this.getApplicationContext() , 0,
-                resultIntent ,PendingIntent.FLAG_UPDATE_CURRENT );
-        NotificationCompat.Action action = new NotificationCompat.Action(R.mipmap.ic_launcher , "Check-In" , resultPendingIntent);
-
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.mipmap.ic_launcher)
-                        .setContentTitle(getString(R.string.app_name))
-                        .setContentText("Found new beacon (" + beacon.getDeviceName() + "). Do you like to check-in now ?")
-                        .setContentIntent(resultPendingIntent)
-                        .addAction(action);
-
-        mNotificationManager.notify(NOTIFICATION_ID , mBuilder.build());
+    private void broadCastBeacon(Beacon beacon) {
+        Intent intent = new Intent(BeaconUtil.ACTION_BEACON_FOUND);
+        intent.putExtra(BeaconUtil.EXTRA_DEVICE , beacon);
+        sendBroadcast(intent);
     }
 }

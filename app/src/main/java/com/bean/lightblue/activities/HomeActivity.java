@@ -8,6 +8,7 @@ import com.bean.lightblue.R;
 import com.bean.lightblue.manager.BeaconManager;
 import com.bean.lightblue.model.Beacon;
 import com.bean.lightblue.service.BeaconService_;
+import com.bean.lightblue.util.BeaconUtil;
 import com.bean.lightblue.view.BeaconView;
 import com.bean.lightblue.view.BeaconView_;
 
@@ -29,7 +30,9 @@ public class HomeActivity extends Activity{
     @Override
     protected void onStart(){
         super.onStart();
-        startService(new Intent(this , BeaconService_.class));
+        Intent intent = new Intent(this , BeaconService_.class);
+        intent.setAction(BeaconUtil.ACTION_START_SCANNING);
+        startService(intent);
         List<Beacon> beacons = mBeaconManager.getBeacons();
         if(beacons != null && !beacons.isEmpty()) {
             showFoundDevice(beacons);

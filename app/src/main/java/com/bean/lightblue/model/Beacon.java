@@ -1,10 +1,13 @@
 package com.bean.lightblue.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  *
  * @author Libin
  */
-public class Beacon {
+public class Beacon implements Parcelable{
 
     private String proximityUuid;
     /**
@@ -26,6 +29,15 @@ public class Beacon {
         this.proximityUuid = proximityUuid;
         this.major = major;
         this.minor = minor;
+    }
+
+    public Beacon(Parcel parcel) {
+        proximityUuid = parcel.readString();
+        major = parcel.readInt();
+        minor = parcel.readInt();
+        rssi = parcel.readInt();
+        deviceName = parcel.readString();
+        macAddress = parcel.readString();
     }
 
     public String getUuid() {
@@ -63,4 +75,32 @@ public class Beacon {
     public void setMacAddress(String macAddress) {
         this.macAddress = macAddress;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int flags) {
+        parcel.writeString(proximityUuid);
+        parcel.writeInt(major);
+        parcel.writeInt(minor);
+        parcel.writeInt(rssi);
+        parcel.writeString(deviceName);
+        parcel.writeString(macAddress);
+    }
+
+    public static final Parcelable.Creator<Beacon> CREATOR = new Parcelable.Creator<Beacon>() {
+
+        @Override
+        public Beacon createFromParcel(Parcel in) {
+            return new Beacon(in);
+        }
+
+        @Override
+        public Beacon[] newArray(int size) {
+            return new Beacon[size];
+        }
+    };
 }

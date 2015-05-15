@@ -16,12 +16,20 @@
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
         <service android:name=".service.BeaconService_"/>
+
+        <receiver android:name=".receiver.BeaconReceiver_">
+            <intent-filter>
+                <action android:name="android.bluetooth.adapter.action.STATE_CHANGED" />
+                <action android:name="android.bluetooth.device.action.ACL_CONNECTED" />
+                <action android:name="android.bluetooth.device.action.ACL_DISCONNECTED" />
+                <action android:name="bean.intent.action.BEACON_FOUND"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
