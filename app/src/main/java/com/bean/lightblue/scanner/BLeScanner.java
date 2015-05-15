@@ -7,6 +7,7 @@ import android.content.Context;
 import android.os.Handler;
 
 import com.bean.lightblue.model.Beacon;
+import com.bean.lightblue.util.BeaconValidator;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -21,9 +22,11 @@ import java.util.UUID;
 
 public abstract class BLeScanner {
 
+    private static final int BEACON_UUID_START_INDEX = 9;
+    private static final int BEACON_MAJOR_ID_START_INDEX = 5;
+
     public static final String BEAN_LIGHT_UUID = "A4951797-C5B1-4B44-B512-1370F02D74DE"; //A495FF10-C5B1-4B44-B512-1370F02D74DE
     private static final String TAG = BLeScanner.class.getSimpleName();
-    final private static char[] hexArray = {'0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'};
 
     protected BluetoothManager mBluetoothManager;
     protected BluetoothAdapter mBluetoothAdapter;
@@ -117,7 +120,7 @@ public abstract class BLeScanner {
 
     protected Beacon getBeaconFromScannedRecord(byte[] scanData) {
 
-        int startByte = 2;
+        int startByte = BEACON_MAJOR_ID_START_INDEX;
 
         int major = (scanData[startByte+20] & 0xff) * 0x100 + (scanData[startByte+21] & 0xff);
         int minor = (scanData[startByte+22] & 0xff) * 0x100 + (scanData[startByte+23] & 0xff);
@@ -134,32 +137,11 @@ public abstract class BLeScanner {
         // 394b31ba3f486415ab376e5c0f09457374696d6f7465426561636f6e00000000000000000000000000000000000000000000000000
 
         byte[] proximityUuidBytes = new byte[16];
-        System.arraycopy(scanData, startByte+4, proximityUuidBytes, 0, 16);
-        String hexString = bytesToHex(proximityUuidBytes);
-        StringBuilder sb = new StringBuilder();
-        sb.append(hexString.substring(0,8));
-        sb.append("-");
-        sb.append(hexString.substring(8,12));
-        sb.append("-");
-        sb.append(hexString.substring(12,16));
-        sb.append("-");
-        sb.append(hexString.substring(16,20));
-        sb.append("-");
-        sb.append(hexString.substring(20,32));
-        String proximityUuid = sb.toString();
-
+        System.arraycopy(scanData, BEACON_UUID_START_INDEX, proximityUuidBytes, 0, 16);
+        String proximityUuid = BeaconValidator.toBeaconUUIDString(proximityUuidBytes);
         return new Beacon(proximityUuid , major , minor);
     }
 
 
-    private static String bytesToHex(byte[] bytes) {
-        char[] hexChars = new char[bytes.length * 2];
-        int v;
-        for ( int j = 0; j < bytes.length; j++ ) {
-            v = bytes[j] & 0xFF;
-            hexChars[j * 2] = hexArray[v >>> 4];
-            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
-        }
-        return new String(hexChars);
-    }
+
 }

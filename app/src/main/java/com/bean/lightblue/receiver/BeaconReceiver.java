@@ -7,6 +7,7 @@ import android.text.TextUtils;
 
 import com.bean.lightblue.model.Beacon;
 import com.bean.lightblue.util.BeaconUtil;
+import com.bean.lightblue.util.BeaconValidator;
 import com.bean.lightblue.util.NotificationUI;
 
 import org.androidannotations.annotations.Bean;
@@ -31,7 +32,7 @@ public class BeaconReceiver extends BroadcastReceiver {
             case BeaconUtil.ACTION_BEACON_FOUND:
                 if(intent.getExtras() != null) {
                     Beacon beacon = intent.getExtras().getParcelable(BeaconUtil.EXTRA_DEVICE);
-                    if (BeaconUtil.isThisMyBeacon(beacon)) {
+                    if (BeaconValidator.isThisMyBeacon(beacon)) {
                         mNotificationUI.showNotification(context, beacon);
                     }
                 }
