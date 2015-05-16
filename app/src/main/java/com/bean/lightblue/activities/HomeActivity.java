@@ -1,7 +1,10 @@
 package com.bean.lightblue.activities;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.widget.LinearLayout;
 
 import com.bean.lightblue.R;
@@ -27,21 +30,35 @@ public class HomeActivity extends Activity{
     @ViewById(R.id.bleDeviceList)
     LinearLayout mBLeDeviceListView;
 
+    private BroadcastReceiver mBeaconReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            showBeacons();
+        }
+    };
+
     @Override
     protected void onStart(){
         super.onStart();
         Intent intent = new Intent(this , BeaconService_.class);
         intent.setAction(BeaconUtil.ACTION_START_SCANNING);
         startService(intent);
-        List<Beacon> beacons = mBeaconManager.getBeacons();
-        if(beacons != null && !beacons.isEmpty()) {
-            showFoundDevice(beacons);
-        }
+        registerReceiver(mBeaconReceiver , new IntentFilter(BeaconUtil.ACTION_BEACON_FOUND));
     }
 
-    private void showFoundDevice(List<Beacon> beacons) {
-        mBLeDeviceListView.removeAllViews();
+    @Override
+    protected void onStop(){
+        unregisterReceiver(mBeaconReceiver);
+        super.onStop();
+    }
 
+    protected void showBeacons() {
+        List<Beacon> beacons = mBeaconManager.getBeacons();
+        if(beacons == null || beacons.isEmpty()) {
+            return;
+        }
+
+        mBLeDeviceListView.removeAllViews();
         for (Beacon beacon : beacons) {
             BeaconView beaconView = BeaconView_.build(this);
             beaconView.bind(beacon);

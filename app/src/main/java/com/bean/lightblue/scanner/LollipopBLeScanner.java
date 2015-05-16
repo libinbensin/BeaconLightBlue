@@ -82,6 +82,7 @@ public class LollipopBLeScanner extends BLeScanner {
     private void scanLeDevice() {
         ScanSettings settings = new ScanSettings.Builder()
                 .setScanMode(ScanSettings.SCAN_MODE_LOW_POWER)
+                .setReportDelay(1000 * 30) // 30 seconds
                 .build();
         List<ScanFilter> filters = new ArrayList<ScanFilter>();
         mBluetoothLeScanner.startScan(filters, settings, mScanCallback);
