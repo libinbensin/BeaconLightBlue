@@ -30,11 +30,14 @@ public class BeaconManager {
             mBeacons = new HashMap<>();
         }
         if(newBeacon != null) {
-            String uuid = newBeacon.getUuid();
-            if(mBeacons.containsKey(uuid)) {
-                mBeacons.remove(mBeacons.get(uuid));
+            String macAddress = newBeacon.getMacAddress();
+            if(mBeacons.containsKey(macAddress)) {
+                Beacon oldBeacon = mBeacons.get(macAddress);
+                if(oldBeacon.getMacAddress().equals(newBeacon.getMacAddress())) {
+                    mBeacons.remove(mBeacons.get(macAddress));
+                }
             }
-            mBeacons.put(uuid , newBeacon);
+            mBeacons.put(macAddress , newBeacon);
         }
     }
 
